@@ -1,0 +1,83 @@
+{% load static %}
+{%load blog_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="{% static 'css/normalize.css'%}">
+  <link rel="stylesheet" href="{% static 'css/style.css'%}">
+  <!-- Font awesome icons -->
+  <link rel="stylesheet" href="{% static 'css/all.min.css'%}">
+  <title>{% block title %}{% endblock title %}</title>
+</head>
+
+<body>
+  <!-- start of header  -->
+  <header>
+    <div>
+      <div class="logo">
+        <a href="/" >
+        <img src="{% static 'images/logo_icon.png'%}" decoding="async" alt="logo"></img>
+        </a>
+      </div>
+      <div class="search-widget">
+        <form action="{% url 'blog:post_search' %}" method="get">
+          <input type="text" name="query" id="search" placeholder="Search">
+        </form>
+      </div>
+    </div>
+      <nav>
+        <ul>
+          {% if request.user.is_authenticated%}
+          <li><a href="{% url 'blog:home' %}">Home</a></li>
+          <li><a href="{% url 'blog:post_create' %}">Write</a></li>
+          <li><a href="{% url 'blog:post-draft'%}">Draft</a></li>
+          <li><a href="{% url 'author' request.user.username%}">Profile</a></li>
+          <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
+          {% else %}
+          <li><a href="{% url 'login'%}?next={{request.path}}" class="">Login</a></li>
+          <li><a href="{% url 'register'%}?next={{request.path}}" class="">SignUP</a></li>
+          {% endif%}
+        </ul>
+      </nav>
+  </header>
+  <!-- End of header -->
+  <!-- Start of messages  -->
+  {% if messages %}
+  <div class="messages" id="messages">
+     
+      {% for message in messages %}
+      <div class="alert {% if message.tags %}alert-{{message.tags}}{%endif%}">
+      <div class="close" id="close">
+        <i class="fas fa-times"></i>
+      </div>
+        {{message}}
+      </div>
+      {% endfor %}
+  </div>
+  {% endif %}
+  <!-- start of page -->
+  <div class="page">
+    <div class="container">
+      {% block content %}
+
+      {% endblock content %}
+
+      {% block sidebar %}
+      {% endblock sidebar %}
+    </div>
+    {% block pagination %}
+      
+    {% endblock pagination %}
+  </div> 
+  <!-- end of page -->
+<script src="{% static 'js/app.js'%}"></script>
+</body>
+</html>

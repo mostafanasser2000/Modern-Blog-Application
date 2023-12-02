@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if post %} Edit {% else %} New {% endif %}Post
+{% endblock title %}
+{% block content %}
+<div class="form post-creation">
+    <h3 class="text-center">{% if post %} Edit {% else %} New {% endif %}Post</h3>
+    <form action="" method="post" enctype="multipart/form-data" class="card">
+        {% csrf_token %}
+        {% for field in form%}
+        {% if field.errors %}
+        <ul class="error-list">
+            {% for error in field.errors%}
+            <li>{{error}}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {{field}}
+        {% endfor %}
+         <label for="id_tags">Select Tags (Ctrl+Click for Multiple)</label>
+        <input type="text" name="other_tags" id="other_tags" placeholder="enter additional tags comma separated tag1, tag2...">
+        <div class="form-buttons">
+            <input type="submit" value="{%if post%}Update{%else%}Add{%endif%}" class="btn btn-primary">
+        </div>
+    </form>
+</div>
+{% endblock content %}

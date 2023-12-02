@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}
+Profile Page
+{% endblock title %}
+{% block content %}
+<div class="form post-form">
+    <h3 class="text-center">Update Profile</h3>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in user_form%}
+        {{field}}
+        {% if field.errors %}
+        <ul class="error-list">
+            {% for error in field.errors %}
+            <li>{{error|striptags}}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endfor %}
+        {% for field in profile_form%}
+        {{field}}
+        <ul class="error-list">
+            {% for error in field.errors %}
+            <li>{{error|striptags}}</li>
+            {% endfor %}
+        </ul>
+        {% endfor %}
+        <div class="form-buttons">
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </div>
+    </form>
+
+
+</div>
+{% endblock content %}

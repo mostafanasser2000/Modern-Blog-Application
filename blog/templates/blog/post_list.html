@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{%load static%}
+{%load blog_tags %}
+
+
+{% block title %}
+Blog App
+{% endblock title %}
+
+{% block content %}
+
+<div class="posts" id="posts">
+    {% with request.GET.query as q%}
+    {% if q %}
+    {% with posts.count as total_results %}
+    <p class="query">Found {{total_results}} result{{total_results|pluralize}} containing "{{q}}"</p>
+    {% endwith %}
+    {% endif %}
+    {% endwith %}
+    {% for post in posts%}
+    <div class="box">
+        <div class="author-info">
+            <div class="avatar">
+                <a href="{% url 'author' post.author%}"><img src="{{post.author.profile.avatar.url}}" alt="{{post.author}}"
+                    decoding="async"></a>
+            </div>
+            <div class="text">
+                <a href="{% url 'blog:posts_by_author' post.author.username%}">{{post.author|title}}</a>
+                <i class="fas fa-calendar"></i><span class="date">{{post.published_at|date:"j F Y"}}</span>
+            </div>
+        </div>
+        <h3 class="post-title">
+            <a href="{{post.get_absolute_url}}">{{post.title}}</a>
+        </h3>
+        <div class="post-content">
+            {{post.content|markdown|truncatewords_html:40|safe}}
+        </div>
+        <div class="post-icons">
+            <span><i class="likes-count fas fa-heart" title="likes" ></i>{{post.likes.count}}</span>
+            <span><i class="comments-count fas fa-comments" title="comments"></i>{{post.comments.count}}</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}
+{% block sidebar %}
+<div class="sidebar" id="sidebar">
+    {% show_latest_posts 3%}
+    {% include "blog/includes/most_commented.html"%}
+    {% include "blog/includes/tags.html"%}
+</div>
+{% endblock sidebar %}
+
+{% block pagination %}
+    {% if posts%}
+    {% include "pagination.html" with page=posts%}
+    {% endif %}
+{% endblock pagination %}

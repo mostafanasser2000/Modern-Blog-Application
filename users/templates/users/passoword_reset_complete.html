@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}
+Reset Complete
+{% endblock title %}
+{% block content %}
+<div class="form">
+        <div class="card">
+            <p>Your Password has been changed successfully. Please <a href="{%url 'login'%}">Login</a></p>
+        </div>
+</div>
+{% endblock content %}

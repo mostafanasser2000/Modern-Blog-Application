@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% load blog_tags %}
+
+{% block title %}
+Profile Page
+{% endblock title %}
+{% block content %}
+<div class="profile card">
+    <div class="avatar">
+         <img src="{{profile.avatar.url}}" alt="" class="avatar">
+    <span class="name">
+        {% if profile.user.first_name or profile.user.last_name%}
+         {{profile.user.first_name|title}} {{profile.user.last_name|title}}
+    {% else %}
+        {{profile.user}}
+    {% endif %}
+    </span>
+    </div> 
+    <div class="about">
+        <h3>About</h3>
+        {% if profile.about %}
+        <p>{{profile.about}}</p>
+        {% endif %}
+    </div>
+
+    <div class="contact">
+        <h3>Connect</h3>
+        <ul class="social">
+            {% if profile.twitter_bio %}
+            <li><a href="{{profile.twitter_bio}}" class="twitter"><i class="fab fa-twitter"></i></a></li>
+            {% endif %}
+            {% if profile.facebook_bio %}
+            <li><a href="{{profile.facebook_bio}}" class="facebook"><i class="fab fa-facebook-f"></i></a></li>
+            {% endif %}
+            {% if profile.youtube_bio%}
+            <li><a href="{{profile.youtube_bio}}" class="youtube"><i class="fab fa-youtube"></i></a></li>
+            {% endif %}
+        </ul>
+    </div>
+    {% if profile.user == request.user %}
+    <div class="form-buttons">
+         <a href="{% url 'profile_update' %}" class="btn btn-primary">Update</a>
+        <a href="{% url 'password_change' %}" class="btn btn-primary">Change Password</a>
+    </div>
+   
+
+    {% endif %}
+</div>
+
+
+{% endblock content %}

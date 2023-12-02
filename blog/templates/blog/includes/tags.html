@@ -1,0 +1,9 @@
+{%load blog_tags %} {% get_tags as tags%}
+<div class="tags">
+  <h3>Tags</h3>
+  <div class="tags-box">
+    {% for tag in tags%}
+    <a href="{% url 'blog:posts_by_tag' tag.slug%}">{{tag.name}}</a>
+    {% endfor %}
+  </div>
+</div>

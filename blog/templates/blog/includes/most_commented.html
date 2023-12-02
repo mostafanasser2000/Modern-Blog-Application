@@ -1,0 +1,12 @@
+{%load blog_tags %}
+
+{%get_most_commented_posts as commented_posts%}
+<ul class="most-commented">
+    <li>Most commented posts</li>
+
+    {% for post in commented_posts%}
+    <li>
+        <a href="{{post.get_absolute_url}}">{{post.title}}</a>
+    </li>
+    {% endfor %}
+</ul>
