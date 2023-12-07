@@ -3,8 +3,7 @@
 Blog App using Django
 
 ## Preview
-
-
+[![Video]](https://www.youtube.com/watch?v=OH_paaKBRUU)
 
 
 ## Feature
