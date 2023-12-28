@@ -19,6 +19,6 @@ urlpatterns = [
     path("tags/<slug:tag>/", views.PostList.as_view(), name="posts_by_tag"),
     path("posts/search/", views.PostList.as_view(), name="post_search"),
     path("posts/draft/", views.PostDraftedList.as_view(), name="post-draft"),
-    path("post/<int:pk>/like/", views.like_post, name="post_like"),
+    path("post/like/", views.like_post, name="post_like"),
     path("post/<int:pk>/dislike/", views.dislike_post, name="post_dislike"),
 ]
