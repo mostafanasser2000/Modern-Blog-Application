@@ -90,7 +90,7 @@ class Comment(models.Model):
         ]
 
     def __str__(self):
-        return f"Comment by {self.user.username} on {self.post}"
+        return f"Comment by {self.user} on {self.post}"
 
 
 class Like(models.Model):
