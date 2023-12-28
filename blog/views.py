@@ -1,5 +1,3 @@
-from typing import Any
-from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Like
 from .forms import PostForm
@@ -16,7 +14,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Tag
 from django.db.models import Count
 from django.db.models import Q
-from django.db import transaction
 
 
 @login_required
@@ -194,7 +191,7 @@ class PostDelete(LoginRequiredMixin, DeleteView):
         messages.success(self.request, "Post was deleted successfully")
         return super(PostDelete, self).form_valid(form)
 
-    # filter query set to insure that only author of the post can delete it
+    # filter query set to ensure that only author of the post can delete it
     def get_queryset(self):
         base_qs = super(PostDelete, self).get_queryset()
         return base_qs.filter(author=self.request.user)
