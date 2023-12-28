@@ -6,6 +6,8 @@ Blog App using Django
 
 
 
+https://github.com/mostafanasser2000/Blog-App/assets/67506662/da888f64-3296-4a50-ae8a-b554386a107b
+
 
 ## Feature
 - user can create an account and login
