@@ -42,7 +42,7 @@ class Post(models.Model):
     content = models.TextField()
     published_at = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="blog_posts"
+        User, on_delete=models.CASCADE, related_name="posts"
     )  # author.blog_posts
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -57,13 +57,14 @@ class Post(models.Model):
         related_name="tags",
         blank=True,
     )
-
-    def __str__(self):
-        return self.title
+    likes = models.ManyToManyField(User, related_name="liked", blank=True)
 
     class Meta:
         ordering = ["-published_at"]
         indexes = [models.Index(fields=["-published_at"])]
+
+    def __str__(self):
+        return self.title
 
     def get_absolute_url(self):
         return reverse("blog:post_detail", args=[self.id, self.slug])
@@ -76,11 +77,11 @@ class Post(models.Model):
 
 class Comment(models.Model):
     body = models.TextField()
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["created_at"]
@@ -89,13 +90,5 @@ class Comment(models.Model):
         ]
 
     def __str__(self):
-        return f"Comment by {self.user} on {self.post}"
+        return self.body
 
-
-class Like(models.Model):
-    post = models.ForeignKey(Post, related_name="likes", on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name="likes", on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ("user", "post")
