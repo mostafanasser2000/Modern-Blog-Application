@@ -20,5 +20,4 @@ urlpatterns = [
     path("posts/search/", views.PostList.as_view(), name="post_search"),
     path("posts/draft/", views.PostDraftedList.as_view(), name="post-draft"),
     path("post/like/", views.like_post, name="post_like"),
-    path("post/<int:pk>/dislike/", views.dislike_post, name="post_dislike"),
 ]
