@@ -39,7 +39,7 @@ class Post(models.Model):
         PUBLISHED = "PB", "Published"
 
     title = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250, unique_for_date="published_at")
+    slug = models.SlugField(max_length=250, blank=True)
     content = models.TextField()
     published_at = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(
@@ -67,8 +67,12 @@ class Post(models.Model):
         indexes = [models.Index(fields=["-published_at"])]
 
     def get_absolute_url(self):
-        return reverse("blog:post_detail", kwargs={"pk": self.id})
+        return reverse("blog:post_detail", args=[self.id, self.slug])
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 class Comment(models.Model):
