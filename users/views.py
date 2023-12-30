@@ -83,10 +83,12 @@ class RegisterView(FormView):
     template_name = "users/register.html"
     form_class = RegisterForm
     redirect_authenticated_user = True
-    success_url = reverse_lazy("login")
+    success_url = reverse_lazy("blog:home")
 
     def form_valid(self, form):
         messages.success(self.request, "Your account has been created successfully")
+        user = form.save()
+        login(self.request, user, backend="users.authentication.EmailAuthBackend")
         return super(RegisterView, self).form_valid(form)
 
 
