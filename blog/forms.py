@@ -2,7 +2,6 @@ from typing import Any
 from django import forms
 from django.forms import ModelForm
 from .models import Post, Comment
-from taggit.forms import TagWidget, TagField
 
 
 class PostForm(ModelForm):
@@ -12,17 +11,10 @@ class PostForm(ModelForm):
     content = forms.CharField(
         label="", widget=forms.Textarea(attrs={"placeholder": "Post Content"})
     )
-    # extra_tags = forms.CharField(
-    #     widget=forms.TextInput(
-    #         attrs={"placeholder": "Enter additional tags comma separated tag1, tag2..."}
-    #     ),
-    #     required=False,
-    # )
 
     class Meta:
         model = Post
         fields = ["title", "content", "status", "tags"]
-
 
 
 class EmailPostForm(forms.Form):
