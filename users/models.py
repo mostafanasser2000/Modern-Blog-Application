@@ -10,9 +10,10 @@ class Profile(models.Model):
     twitter_bio = models.URLField(null=True, blank=True)
     youtube_bio = models.URLField(null=True, blank=True)
     facebook_bio = models.URLField(null=True, blank=True)
+    following = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
 
     def __str__(self):
-        return f"{self.user.username} Profile"
+        return f"{self.user} Profile"
 
     # resize profile avatar before saving to the database
     def save(self, *args, **kwargs):
