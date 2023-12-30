@@ -5,7 +5,7 @@ Delete {{post.title}}
 {% block content %}
 <div class="form">
     <h3 class="text-center">Delete Post</h3>
-    <form action="{% url 'blog:post_delete' post.id %}" method="post" class="card">
+    <form action="{% url 'blog:post_delete' post.id post.slug%}" method="post" class="card">
         {% csrf_token%}
         <p>Are you sure that you want to delete "{{post.title}}" Post?</p>
         <div class="form-buttons">
