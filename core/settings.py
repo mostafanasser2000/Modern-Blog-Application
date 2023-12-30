@@ -112,21 +112,11 @@ AUTHENTICATION_BACKENDS = [
     "users.authentication.EmailAuthBackend",
 ]
 
-# For sending emails using email server
-# EMAIL_HOST = "smtp.gmail.com"
-# EMAIL_PORT = 25
-# EMAIL_USE_TLS = False  # use Transport Layer Security(TLS) secure connection
-# # EMAIL_USE_SSL = True  # whether to use implicit TLS secure connection
-# EMAIL_HOST_USER = <email>  # the user of smtp server who send email
-# EMAIL_HOST_PASSWORD = (
-#     <password>  # the password of user of smtp server who send email
-# )
-# django-sengrid and django-ses simplify the task of adding SendGrid or Amazon SES to our applications
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_PORT = 25
 EMAIL_USE_TLS = False
-EMAIL_HOST_USER = '<existing email>'
-EMAIL_HOST_PASSWORD = '<password of email>'
+EMAIL_HOST_USER = '<google email>'
+EMAIL_HOST_PASSWORD = '<google email password>'
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Internationalization
