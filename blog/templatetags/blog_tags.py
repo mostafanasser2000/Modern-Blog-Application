@@ -34,7 +34,7 @@ def markdown_format(text):
 
 @register.simple_tag(name="top_rated_post")
 def top_rated_posts(count=5):
-    return Post.published.all().order_by("-rating")[:count]
+    return Post.published.annotate(total_likes=Count('likes')).order_by("-total_likes")[:count]
 
 
 @register.simple_tag
