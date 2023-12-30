@@ -7,15 +7,36 @@ Profile Page
 {% endblock title %}
 {% block content %}
 <div class="profile card">
-    <div class="avatar">
-         <img src="{{profile.avatar.url}}" alt="" class="avatar">
-    <span class="name">
-        {% if profile.user.first_name or profile.user.last_name%}
-         {{profile.user.first_name|title}} {{profile.user.last_name|title}}
-    {% else %}
-        {{profile.user}}
-    {% endif %}
-    </span>
+    <div class="info">
+        <div class="avatar">
+            <img src="{{profile.avatar.url}}" alt="" class="avatar">
+        <span class="name">
+            {% if profile.user.first_name or profile.user.last_name%}
+             {{profile.user.first_name|title}} {{profile.user.last_name|title}}
+        {% else %}
+            {{profile.user}}
+        {% endif %}
+        </span>
+        </div>
+        <div class="followers">
+              {% with followers_count=profile.followers.count%}
+        <span class="count">
+        <span class="total">{{followers_count}}</span>
+        Follower{{followers_count|pluralize}}
+      </span>
+            {%if request.user != profile.user%}
+                 <a href="#" data-id="{{user.id}}" data-action="{% if request.user in profile.followers.all%}un{%endif%}follow" class="follow btn btn-secondary">
+        {% if request.user  in profile.followers.all %}
+          Unfollow
+        {% else %}
+            Follow
+        {% endif %}
+      </a>
+            {%endif%}
+
+        {%endwith%}
+        </div>
+
     </div> 
     <div class="about">
         <h3>About</h3>
