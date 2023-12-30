@@ -634,6 +634,7 @@ label {
   padding: 20px;
   background-color: var(--color-white);
 }
+
 .profile .avatar img {
   width: 100px;
   height: 100px;
@@ -711,4 +712,16 @@ label {
 .profile .form-buttons {
   justify-content: flex-start;
 }
+
+.profile .followers .count {
+  font-size: 16px;
+  font-weight: bold;
+}
+.profile a.follow {
+  margin-left: auto;
+}
+a.btn:hover {
+  color:white;
+}
+
 /* end of profile */
