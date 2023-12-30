@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post, Like
+from django.shortcuts import render, get_object_or_404
+from .models import Post, Comment
 from .forms import PostForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -7,19 +7,20 @@ from django.urls import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .forms import EmailPostForm, CommentForm
+from .forms import EmailPostForm
 from django.core.mail import send_mail
 from django.views.decorators.http import require_POST
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Tag
 from django.db.models import Count
 from django.db.models import Q
+from django.http import JsonResponse
 
 
 @login_required
-def post_share(request, post_id):
+def post_share(request, pk, slug):
     """Share a post using email"""
-    post = get_object_or_404(Post, pk=post_id)
+    post = get_object_or_404(Post, pk=pk, slug=slug)
     sent = False
     form = None
     user_email = request.user.email
@@ -43,34 +44,40 @@ def post_share(request, post_id):
 
 @login_required
 @require_POST
-def post_comment(request, post_id):
+def comment(request):
     """Add a comment to a post"""
-    post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
-    comment = None
-    form = CommentForm(data=request.POST)
+    post_id, comment_body = request.POST.get("id"), request.POST.get("body")
+    try:
+        post = Post.objects.get(pk=post_id)
+        comment_obj = Comment(post=post, user=request.user, body=comment_body)
+        comment_obj.save()
+        return JsonResponse({"status": "ok", "author": request.user.username, "body": comment_body, "created_at":
+            comment_obj.created_at})
 
-    if form.is_valid():
-        comment = form.save(commit=False)
-        comment.user = request.user
-        comment.post = post
-        comment.save()
-    return redirect(reverse_lazy("blog:post_detail", kwargs={"pk": post.id}))
-
-
-@login_required
-def like_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    like, created = Like.objects.get_or_create(user=request.user, post=post)
-
-    return redirect("blog:post_detail", pk=post.pk)
+    except Post.DoesNotExist:
+        pass
+    return JsonResponse({"status": "error"})
 
 
 @login_required
-def dislike_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    like = Like.objects.filter(user=request.user, post=post)
-    like.delete()
-    return redirect("blog:post_detail", pk=post.pk)
+@require_POST
+def like(request):
+    post_id, action = request.POST.get("id"), request.POST.get("action")
+    print(post_id, action)
+    if post_id and action:
+        try:
+            post = Post.objects.get(pk=post_id)
+            if action == "like":
+                post.likes.add(request.user)
+            else:
+                post.likes.remove(request.user)
+
+            return JsonResponse({"status": "ok"})
+
+        except Post.DoesNotExist:
+            pass
+
+    return JsonResponse({"status": "error"})
 
 
 def get_extra_tags(request, post):
@@ -80,6 +87,17 @@ def get_extra_tags(request, post):
     other_tags_names = [tag.strip() for tag in other_tags if tag.strip()]
     for tag_name in other_tags_names:
         post.tags.add(Tag.objects.create(name=tag_name))
+
+
+def get_related_posts(post):
+    """Get all related posts to a post"""
+    post_tags_ids = post.tags.values_list("id", flat=True)
+    related_posts = Post.objects.filter(tags__in=post_tags_ids).exclude(id=post.id)
+    related_posts = related_posts.annotate(same_tags=Count("tags")).order_by(
+        "-same_tags", "-published_at"
+    )[:4]
+
+    return related_posts
 
 
 class PostList(ListView):
@@ -123,23 +141,7 @@ class PostDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         post = self.get_object()
-        # get all related posts
-        post_tags_ids = post.tags.values_list("id", flat=True)
-        related_posts = Post.objects.filter(tags__in=post_tags_ids).exclude(id=post.id)
-        related_posts = related_posts.annotate(same_tags=Count("tags")).order_by(
-            "-same_tags", "-published_at"
-        )[:4]
-        # get all comments on that post
-        comments = post.comments.filter(active=True)
-        is_liked = False
-        if self.request.user.is_authenticated:
-            is_liked = post.likes.filter(user=self.request.user).exists()
-        # form for users to comment
-        form = CommentForm()
-        context["comments"] = comments
-        context["form"] = form
-        context["related_posts"] = related_posts
-        context["liked_post"] = is_liked
+        context["related_posts"] = get_related_posts(post)
         return context
 
 
