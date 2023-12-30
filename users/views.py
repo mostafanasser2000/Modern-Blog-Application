@@ -1,19 +1,18 @@
 from django.shortcuts import render, redirect
 from .forms import LoginForm, RegisterForm, ProfileUpdateForm, UserUpdateForm
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import FormView
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from .models import Profile
-from django.contrib.auth.models import User
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 
 
-# Functions based views
 def sign_in(request):
     """Loin existing user"""
     if request.method == "GET":
@@ -28,11 +27,9 @@ def sign_in(request):
         if form.is_valid():
             email = form.cleaned_data["email"]
             password = form.cleaned_data["password"]
-            # authenticate verifies username and password.
             user = authenticate(request, username=email, password=password)
 
             if user:
-                # function logs a user in. technically it creates a session id on the server and sends it back to web browser in form of cookie
                 login(request, user)
                 messages.success(
                     request,
@@ -40,17 +37,8 @@ def sign_in(request):
                 )
                 return redirect("blog:home")
 
-        # if  form is invalid or user not authenticated
         messages.error(request, f"Invalid username or password")
         return render(request, "users/login.html", {"form": form})
-
-
-@login_required
-def sign_out(request):
-    """Logout logged users"""
-    logout(request)
-    messages.success(request, f"You have been logged out.")
-    return redirect("home")
 
 
 def sign_up(request):
@@ -62,8 +50,6 @@ def sign_up(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            # username = form.cleaned_data['username']
-            # password = form.cleaned_data['password1']
             user = form.save(commit=False)
             user.username = user.username.lower()
             form.save()
@@ -75,14 +61,13 @@ def sign_up(request):
             return render(request, "users/register.html", {"form": form})
 
 
-# Class based views
-# Error here i can't use my LoginForm with the Login View
+# FIX: here I can't use my LoginForm with the Login View
 class MyLoginView(LoginView):
     redirect_authenticated_user = True
     template_name = "users/login.html"
     form_class = (
         LoginForm()
-    )  # error is here as Login View has it's own login form class
+    )  # error is here as Login View has its own login form class
 
     def get_success_url(self) -> str:
         return reverse_lazy("blog:home")
@@ -101,7 +86,6 @@ class RegisterView(FormView):
     success_url = reverse_lazy("login")
 
     def form_valid(self, form):
-        user = form.save()
         messages.success(self.request, "Your account has been created successfully")
         return super(RegisterView, self).form_valid(form)
 
@@ -140,6 +124,31 @@ class ProfileUpdateView(LoginRequiredMixin, View):
 
 
 @login_required()
-def profile(request, username):
+def profile_view(request, username):
     profile = Profile.objects.get(user__username=username)
     return render(request, "users/profile.html", {"profile": profile})
+
+
+@require_POST
+@login_required()
+def follow(request):
+    user_id, action = request.POST.get("id"), request.POST.get("action")
+    print(user_id, action)
+    if user_id and action:
+        try:
+            follower_profile = Profile.objects.get(user=request.user)
+            following_profile = Profile.objects.get(user__id=user_id)
+            if action == "follow":
+                follower_profile.following.add(following_profile)
+            else:
+                follower_profile.following.remove(following_profile)
+
+            return JsonResponse({"status": "ok"})
+
+        except Profile.DoesNotExist:
+            pass
+
+        return JsonResponse({"status": "error"})
+
+
+
