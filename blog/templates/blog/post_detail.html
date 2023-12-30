@@ -6,14 +6,15 @@
 {% endblock title %}
 
 {% block content %}
+{% with total_likes=post.likes.count total_comments=post.comments.count comments=post.comments.all %}
 <div class="post box">
         <div class="author-info">
             <div class="avatar">
-                <a href="{% url 'author' post.author%}"><img src="{{post.author.profile.avatar.url}}" alt="{{post.author}}"
+                <a href="{% url 'profile' post.author%}"><img src="{{post.author.profile.avatar.url}}" alt="{{post.author}}"
                     decoding="async"></a>
             </div>
             <div class="text">
-                <a href="{% url 'blog:posts_by_author' post.author.username%}">{{post.author|title}}</a>
+                <a href="{% url 'blog:posts_by_author' post.author%}">{{post.author|title}}</a>
                 <i class="fas fa-calendar"></i><span class="date">{{post.published_at|date:"j F Y"}}</span>
             </div>
         </div>
@@ -27,28 +28,22 @@
             <a href="{% url 'blog:posts_by_tag' tag.slug%}">{{tag.name}}</a>
         {% endfor %}
             </div>
-       
+
         </div>
 
         <div class="post-icons">
             <div class="text">
-            {% if user.is_authenticated %}
-               {% if liked_post %}
-                <a href="{% url 'blog:post_dislike' post.id%}"><span><i class="liked fa fa-heart" title="likes"></i>{{post.likes.count}}</span></a>
-               {%else%}
-                <a href="{% url 'blog:post_like' post.id%}"><span><i class="disliked fa fa-heart" title="likes"></i>{{post.likes.count}}</span></a>
-               {% endif %}
-            {% else %}
-                <span><i class="liked fa fa-heart" title="likes"></i>{{post.likes.count}}</span>
-            {% endif %}
-           
-                <a href="#comments"><span><i class="fa fa-comment" title="comments"></i>{{comments.count}}</span></a>
-                <a href="{%url 'blog:post_share' post.id%}" title="share"><i class="fa fa-share-from-square"></i></a>
+                <a href="{% url 'blog:post_like'%}" data-id="{{post.id}}" data-action="{% if user in post.likes %}un{%endif%}like" class="like {% if not request.user.is_authenticated%}disabled{%endif%}" >
+                    <i class="liked fa fa-heart" title="likes"></i>
+                    <span class="likes-count">{{total_likes}}</span>
+                </a>
+                <a href="#comments"><span><i class="fa fa-comment" title="comments"></i>{{total_comments}}</span></a>
+                <a href="{%url 'blog:post_share' post.id post.slug%}" title="share"><i class="fa fa-share-from-square"></i></a>
             </div>
             {% if user.is_authenticated and user == post.author%}
             <div class="edit">
-                <a href="{% url 'blog:post_update' post.id%}" title="edit"><i class="edit fa fa-edit"></i></a>
-                <a href="{% url 'blog:post_delete' post.id%}" title="delete"><i class="delete fa fa-trash-alt"></i></a>
+                <a href="{% url 'blog:post_update' post.id post.slug%}" title="edit"><i class="edit fa fa-edit"></i></a>
+                <a href="{% url 'blog:post_delete' post.id post.slug%}" title="delete"><i class="delete fa fa-trash-alt"></i></a>
             </div>
             {% endif %}
         </div>
@@ -58,9 +53,16 @@
         </div>
 
         <div class="comments" id="comments">
-        <h3 class="text-center">Comments ({{comments.count}})</h3>
+        <h3 class="text-center">Comments ({{total_comments}})</h3>
         {% if user.is_authenticated %}
-            {% include "blog/includes/comment_form.html" %}
+            <div class="form">
+                <form name="comment-form" data-id="{{post.id}}">
+                    <textarea name="comment-body"></textarea>
+                    <div class="form-buttons">
+                         <input type="submit"  class="btn btn-primary" value="Comment">
+                    </div>
+                </form>
+            </div>
         {% endif %}
         {% for comment in comments %}
             <div class="comment">
@@ -73,8 +75,9 @@
         {% endfor %}
     </div>
 </div>
-  
+{%endwith%}
 {% endblock content %}
+
 {% block sidebar %}
 <div class="sidebar">
     <ul class="related-posts" id="sidebar">
