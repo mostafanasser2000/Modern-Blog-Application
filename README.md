@@ -36,3 +36,9 @@ python3 manage.py migrate
 ```bash
 python3 manage.py runserver
 ```
+
+- for password reset functionality to work these lines at `core/settings.py` should be replaced with the existing Gmail account 
+```python
+EMAIL_HOST_USER = '<google email>'
+EMAIL_HOST_PASSWORD = '<google email password>'
+```
