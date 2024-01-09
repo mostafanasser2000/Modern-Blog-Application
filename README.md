@@ -5,7 +5,7 @@ Feature-rich blog application using Django
 [preview.webm](https://github.com/mostafanasser2000/Blog-App/assets/67506662/c917676f-f133-402d-96c0-a172a87ba87c)
 
 
-## Feature
+## Main Features
 *   **User Authentication:**
     
     *   Implemented user registration and login functionalities using Django's built-in authentication system.
