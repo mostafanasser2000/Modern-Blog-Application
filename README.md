@@ -1,6 +1,6 @@
 # Blog APP
 
-Feature-rich blog application using Django
+📔️ Feature-rich blog application using Django Framework
 ## Preview
 [preview.webm](https://github.com/mostafanasser2000/Blog-App/assets/67506662/c917676f-f133-402d-96c0-a172a87ba87c)
 
