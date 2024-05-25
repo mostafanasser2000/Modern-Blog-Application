@@ -1,7 +1,7 @@
 # Blog APP
 
 📔️ Feature-rich blog application using Django Framework
-## Preview
+## Youtube Video Preview
 [![Blog Project Preivew](https://img.youtube.com/vi/OH_paaKBRUU/0.jpg)](https://www.youtube.com/watch?v=OH_paaKBRUU)
 
 ## Main Features
