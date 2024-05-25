@@ -2,8 +2,7 @@
 
 📔️ Feature-rich blog application using Django Framework
 ## Preview
-[preview.webm](https://github.com/mostafanasser2000/Blog-App/assets/67506662/c917676f-f133-402d-96c0-a172a87ba87c)
-
+[![Blog Project Preivew](https://img.youtube.com/vi/OH_paaKBRUU/0.jpg)](https://www.youtube.com/watch?v=OH_paaKBRUU)
 
 ## Main Features
 *   **User Authentication:**
